@@ -50,54 +50,24 @@ const int MAX_ANIMALS = 500; ///< Максимальна кількість тв
 
 // --- Допоміжні функції (Trim) ---
 
-/**
- * @brief Видаляє пробіли зліва (з початку) рядка.
- * @param s Вхідний рядок.
- * @return Рядок без пробілів на початку.
- */
 static inline string ltrim(const string& s) {
     size_t start = s.find_first_not_of(" \t\r\n");
     return (start == string::npos) ? "" : s.substr(start);
 }
 
-/**
- * @brief Видаляє пробіли справа (з кінця) рядка.
- * @param s Вхідний рядок.
- * @return Рядок без пробілів у кінці.
- */
 static inline string rtrim(const string& s) {
     size_t end = s.find_last_not_of(" \t\r\n");
     return (end == string::npos) ? "" : s.substr(0, end + 1);
 }
 
-/**
- * @brief Видаляє пробіли з обох кінців рядка.
- * @param s Вхідний рядок.
- * @return Очищений рядок.
- */
 static inline string trim(const string& s) {
     return rtrim(ltrim(s));
 }
 
 // =================================================================================
-// ПОЧАТОК БЛОКУ УЧАСНИКА 1
 // МОДУЛЬ 1: АВТОРИЗАЦІЯ КОРИСТУВАЧА
-// (Функції: loadUsersFromFile, saveUsersToFile, createDefaultUsersFile,
-// usernameExists, authenticate, registerUser, runUserModule)
 // =================================================================================
 
-/*
-Модуль “Авторизація користувача”: Забезпечує вхід до системи,
-перевірку логіна і пароля користувача, визначає його роль (інспектор,
-ветеринар, адміністратор, директор) і надає відповідний рівень
-доступу. Також дозволяє створювати нових користувачів.
-*/
-
-/**
- * @brief Завантажує список користувачів з файлу USERS_FILE у масив.
- * @param users Масив для заповнення користувачами.
- * @param count Посилання на змінну, куди буде записано кількість завантажених користувачів.
- */
 void loadUsersFromFile(User users[], int& count) {
     count = 0;
     ifstream fin(USERS_FILE);
@@ -131,12 +101,6 @@ void loadUsersFromFile(User users[], int& count) {
     fin.close();
 }
 
-/**
- * @brief Зберігає поточний список користувачів з масиву у файл.
- * @param path Шлях до файлу (зазвичай USERS_FILE).
- * @param users Масив користувачів для збереження.
- * @param count Кількість користувачів у масиві.
- */
 void saveUsersToFile(const string& path, const User users[], int count) {
     ofstream fout(path);
     if (!fout.is_open()) {
@@ -150,10 +114,6 @@ void saveUsersToFile(const string& path, const User users[], int count) {
     fout.close();
 }
 
-/**
- * @brief Створює файл users.txt за замовчуванням, якщо він не існує.
- * @param path Шлях до файлу (зазвичай USERS_FILE).
- */
 void createDefaultUsersFile(const string& path) {
     ofstream fout(path);
     if (!fout.is_open()) {
@@ -169,13 +129,6 @@ void createDefaultUsersFile(const string& path) {
     cout << "Created default user file: " << path << "\n";
 }
 
-/**
- * @brief Перевіряє, чи існує користувач з таким іменем.
- * @param users Масив користувачів.
- * @param count Кількість користувачів.
- * @param username Ім'я, яке потрібно перевірити.
- * @return true, якщо ім'я вже зайняте, інакше false.
- */
 bool usernameExists(const User users[], int count, const string& username) {
     for (int i = 0; i < count; ++i) {
         if (users[i].username == username) return true;
@@ -183,14 +136,6 @@ bool usernameExists(const User users[], int count, const string& username) {
     return false;
 }
 
-/**
- * @brief Перевіряє логін та пароль користувача.
- * @param users Масив користувачів.
- * @param count Кількість користувачів.
- * @param login Логін, що перевіряється.
- * @param password Пароль, що перевіряється.
- * @return Вказівник на об'єкт User у разі успіху, або nullptr у разі невдачі.
- */
 const User* authenticate(const User users[], int count, const string& login, const string& password) {
     for (int i = 0; i < count; ++i) {
         if (users[i].username == login && users[i].password == password) {
@@ -202,9 +147,7 @@ const User* authenticate(const User users[], int count, const string& login, con
 
 /**
  * @brief Реєструє нового користувача в системі.
- * (Викликається лише адміністратором або директором).
- * @param users Масив користувачів.
- * @param count Посилання на лічильник користувачів (буде збільшено).
+ * ВИПРАВЛЕНО: Додано перевірку на спецсимволи та валідацію ролі.
  */
 void registerUser(User users[], int& count) {
     if (count >= MAX_USERS) {
@@ -214,6 +157,8 @@ void registerUser(User users[], int& count) {
 
     string username, password, role;
     cout << "\n=== User Registration (Admin) ===\n";
+
+    // --- Введення логіна ---
     cout << "Enter new username: ";
     getline(cin, username);
     username = trim(username);
@@ -222,10 +167,19 @@ void registerUser(User users[], int& count) {
         cout << "Error: Username cannot be empty.\n";
         return;
     }
+
+    // ВИПРАВЛЕННЯ ПОМИЛКИ №1: Заборона символу ':' у логіні
+    if (username.find(':') != string::npos) {
+        cout << "Error: Username cannot contain the character ':' as it breaks file format.\n";
+        return;
+    }
+
     if (usernameExists(users, count, username)) {
         cout << "Error: Username already exists.\n";
         return;
     }
+
+    // --- Введення пароля ---
     cout << "Enter password: ";
     getline(cin, password);
     password = trim(password);
@@ -233,17 +187,29 @@ void registerUser(User users[], int& count) {
         cout << "Error: Password cannot be empty.\n";
         return;
     }
-
-    // --- Ось де адмін призначає роль ---
-    cout << "Enter role (inspector / veterinarian / administrator / director): ";
-    getline(cin, role);
-    role = trim(role);
-
-    if (role != "inspector" && role != "veterinarian" && role != "administrator" && role != "director") {
-        cout << "Invalid role. Defaulting to 'inspector'.\n";
-        role = "inspector";
+    // (Опціонально) Також перевіряємо пароль на ':' для надійності
+    if (password.find(':') != string::npos) {
+        cout << "Error: Password cannot contain the character ':'.\n";
+        return;
     }
-    // --- Кінець призначення ролі ---
+
+    // --- Введення ролі ---
+    // ВИПРАВЛЕННЯ ПОМИЛКИ №2: Примусове введення коректної ролі
+    bool validRole = false;
+    while (!validRole) {
+        cout << "Enter role (inspector / veterinarian / administrator / director): ";
+        getline(cin, role);
+        role = trim(role);
+
+        if (role == "inspector" || role == "veterinarian" ||
+            role == "administrator" || role == "director") {
+            validRole = true;
+        }
+        else {
+            cout << "Invalid role entered. Please try again.\n";
+            // Ми більше не встановлюємо роль за замовчуванням мовчки
+        }
+    }
 
     users[count].username = username;
     users[count].password = password;
@@ -254,10 +220,6 @@ void registerUser(User users[], int& count) {
     cout << "User registered successfully!\n";
 }
 
-/**
- * @brief Функція-запускач для Модуля 1.
- * (ОНОВЛЕНО: тепер вимагає вхід для доступу до реєстрації)
- */
 void runUserModule() {
     User users[MAX_USERS];
     int userCount = 0;
@@ -277,7 +239,6 @@ void runUserModule() {
     cout << "\n=== Zoo Management System ===\n";
     cout << "=== Authorization & Registration ===\n\n";
 
-    // --- Крок 1: Вимагаємо вхід для демонстрації модуля ---
     cout << "--- Module Demo: Please login to proceed ---" << endl;
     string login, password;
     cout << "Login: ";
@@ -295,11 +256,8 @@ void runUserModule() {
     cout << "\nLogin successful! You are: " << loggedInUser->username
         << " (Role: " << loggedInUser->role << ")" << endl;
 
-    // --- Крок 2: Меню на основі ролі ---
     while (true) {
         cout << "\n--- User Module Menu ---\n";
-
-        // *Тільки* адмін (або директор) бачить опцію реєстрації
         if (loggedInUser->role == "administrator" || loggedInUser->role == "director") {
             cout << "1. Register New User\n";
         }
@@ -310,8 +268,6 @@ void runUserModule() {
         getline(cin, choice);
 
         if (choice == "1" && (loggedInUser->role == "administrator" || loggedInUser->role == "director")) {
-            // Адмін, який увійшов, тепер запускає функцію реєстрації
-            // і сам призначає роль новому користувачу
             registerUser(users, userCount);
         }
         else if (choice == "2") {
@@ -319,24 +275,13 @@ void runUserModule() {
             break;
         }
         else {
-            // Сюди потрапить не-адмін, якщо введе "1"
             cout << "Invalid choice or insufficient permissions. Please try again.\n";
         }
     }
 }
-// =================================================================================
-// КІНЕЦЬ 1 модуля
-// =================================================================================
-
 
 // --- Спільні функції для Модулів 2 та 3 ---
-// (Ці функції можуть бути представлені Учасником 2 або 3)
 
-/**
- * @brief Завантажує список тварин з файлу ANIMALS_FILE у масив.
- * @param animals Масив для заповнення тваринами.
- * @param count Посилання на змінну, куди буде записано кількість завантажених тварин.
- */
 void loadAnimals(Animal animals[], int& count) {
     count = 0;
     ifstream fin(ANIMALS_FILE);
@@ -373,11 +318,6 @@ void loadAnimals(Animal animals[], int& count) {
     fin.close();
 }
 
-/**
- * @brief Зберігає поточний список тварин з масиву у файл ANIMALS_FILE.
- * @param animals Масив тварин для збереження.
- * @param count Кількість тварин у масиві.
- */
 void saveAnimals(const Animal animals[], int count) {
     ofstream fout(ANIMALS_FILE);
     if (!fout.is_open()) {
@@ -392,13 +332,6 @@ void saveAnimals(const Animal animals[], int count) {
     fout.close();
 }
 
-/**
- * @brief Перевіряє, чи існує тварина з таким ID.
- * @param animals Масив тварин.
- * @param count Кількість тварин.
- * @param id ID, яке потрібно перевірити.
- * @return true, якщо ID вже зайнятий, інакше false.
- */
 bool idExists(const Animal animals[], int count, int id) {
     for (int i = 0; i < count; ++i) {
         if (animals[i].id == id) return true;
@@ -406,13 +339,6 @@ bool idExists(const Animal animals[], int count, int id) {
     return false;
 }
 
-/**
- * @brief Знаходить тварину за її ID.
- * @param animals Масив тварин.
- * @param count Кількість тварин.
- * @param id ID тварини для пошуку.
- * @return Вказівник на об'єкт Animal у разі успіху, або nullptr, якщо тварину не знайдено.
- */
 Animal* findAnimalById(Animal animals[], int count, int id) {
     for (int i = 0; i < count; ++i) {
         if (animals[i].id == id) return &animals[i];
@@ -420,10 +346,6 @@ Animal* findAnimalById(Animal animals[], int count, int id) {
     return nullptr;
 }
 
-/**
- * @brief Виводить у консоль список усіх тварин у вигляді таблиці.
- * (Використовується Модулями 2 та 3 для демонстрації)
- */
 void showAnimals(const Animal animals[], int count) {
     cout << "\n=== Animal List ===\n";
     if (count == 0) {
@@ -447,23 +369,10 @@ void showAnimals(const Animal animals[], int count) {
     }
 }
 
-
 // =================================================================================
 // МОДУЛЬ 2: ДОДАВАННЯ НОВОЇ ТВАРИНИ
-// (Функції: addNewAnimal, runAddAnimalModule)
 // =================================================================================
 
-/*
-Модуль “Додавання нової тварини”: Призначений для внесення в
-базу нових тварин. Користувач вводить ID, назву, вид, вік
-і стан здоров’я.
-*/
-
-/**
- * @brief Додає нову тварину до масиву та зберігає у файл.
- * @param animals Масив тварин.
- * @param count Посилання на лічильник тварин.
- */
 void addNewAnimal(Animal animals[], int& count) {
     if (count >= MAX_ANIMALS) {
         cout << "Error: Animal limit reached. Cannot add new animal.\n";
@@ -478,7 +387,7 @@ void addNewAnimal(Animal animals[], int& count) {
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    cin.ignore(10000, '\n'); // Очистити буфер після cin
+    cin.ignore(10000, '\n');
 
     if (idExists(animals, count, a.id)) {
         cout << "Error: Animal with this ID already exists.\n";
@@ -487,6 +396,14 @@ void addNewAnimal(Animal animals[], int& count) {
 
     cout << "Enter animal name: ";
     getline(cin, a.name);
+    // Для тварин також бажано уникати ':', оскільки це роздільник в animals.txt
+    if (a.name.find(':') != string::npos) {
+        cout << "Warning: Removing ':' from name to prevent database corruption.\n";
+        // Простий fix: замінити ':' на пробіл або видалити
+        size_t pos;
+        while ((pos = a.name.find(':')) != string::npos) a.name[pos] = ' ';
+    }
+
     cout << "Enter species (e.g., Lion, Tiger, Elephant): ";
     getline(cin, a.species);
     cout << "Enter age (in years): ";
@@ -495,7 +412,7 @@ void addNewAnimal(Animal animals[], int& count) {
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    cin.ignore(10000, '\n'); // Очистити буфер після cin
+    cin.ignore(10000, '\n');
 
     cout << "Enter health status (e.g., Healthy, Sick, Injured): ";
     getline(cin, a.healthStatus);
@@ -507,9 +424,6 @@ void addNewAnimal(Animal animals[], int& count) {
     cout << "\nAnimal added successfully!\n";
 }
 
-/**
- * @brief Функція-запускач для Модуля 2.
- */
 void runAddAnimalModule() {
     Animal animals[MAX_ANIMALS];
     int animalCount = 0;
@@ -540,27 +454,11 @@ void runAddAnimalModule() {
         }
     }
 }
-// =================================================================================
-// КІНЕЦЬ 2 модуля
-// =================================================================================
-
 
 // =================================================================================
 // МОДУЛЬ 3: ОНОВЛЕННЯ ІНФОРМАЦІЇ
-// (Функції: updateAnimal, runUpdateAnimalModule)
 // =================================================================================
 
-/*
-Модуль “Оновлення інформації”: Дозволяє редагувати дані про
-існуючих тварин. Можна змінювати вік або стан здоров’я за ID
-тварини. Зміни зберігаються у файл бази.
-*/
-
-/**
- * @brief Оновлює інформацію (вік, здоров'я) про існуючу тварину за ID.
- * @param animals Масив тварин.
- * @param count Кількість тварин.
- */
 void updateAnimal(Animal animals[], int count) {
     cout << "\n=== Update Animal Information ===\n";
     if (count == 0) {
@@ -575,7 +473,7 @@ void updateAnimal(Animal animals[], int count) {
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    cin.ignore(10000, '\n'); // Очистити буфер після cin
+    cin.ignore(10000, '\n');
 
     Animal* animal = findAnimalById(animals, count, id);
     if (!animal) {
@@ -595,7 +493,7 @@ void updateAnimal(Animal animals[], int count) {
         cin.clear();
         cin.ignore(10000, '\n');
     }
-    cin.ignore(10000, '\n'); // Очистити буфер після cin
+    cin.ignore(10000, '\n');
 
     cout << "Enter new health status (current: " << animal->healthStatus << "): ";
     getline(cin, animal->healthStatus);
@@ -605,9 +503,6 @@ void updateAnimal(Animal animals[], int count) {
     cout << "\nAnimal information updated successfully!\n";
 }
 
-/**
- * @brief Функція-запускач для Модуля 3.
- */
 void runUpdateAnimalModule() {
     Animal animals[MAX_ANIMALS];
     int animalCount = 0;
@@ -644,35 +539,17 @@ void runUpdateAnimalModule() {
         }
     }
 }
-// =================================================================================
-// Кінець 3 модуля
-// =================================================================================
-
 
 // =================================================================================
 // МОДУЛЬ 4: ФОРМУВАННЯ ЗВІТІВ
-// (Функції: generateReport, runReportModule)
 // =================================================================================
 
-/*
-Модуль “Формування звітів”: Здійснює аналіз усіх наявних даних про
-тварин і формує статистичний звіт — кількість тварин за видами,
-середній вік, загальну кількість.
-*/
-
-/**
- * @brief Генерує звіт за видами тварин (кількість, середній вік).
- * Виводить звіт у консоль та зберігає у файл REPORT_FILE.
- * @param animals Масив тварин.
- * @param count Кількість тварин.
- */
 void generateReport(const Animal animals[], int count) {
     if (count == 0) {
         cout << "No animals found to generate a report.\n";
         return;
     }
 
-    // Використовуємо MAX_ANIMALS, оскільки видів не може бути більше, ніж тварин
     SpeciesReport reportData[MAX_ANIMALS];
     int reportSize = 0;
 
@@ -687,7 +564,7 @@ void generateReport(const Animal animals[], int count) {
             }
         }
         if (!found) {
-            if (reportSize < MAX_ANIMALS) { // Переконайтеся, що не виходимо за межі масиву
+            if (reportSize < MAX_ANIMALS) {
                 reportData[reportSize].species = animals[i].species;
                 reportData[reportSize].count = 1;
                 reportData[reportSize].totalAge = animals[i].age;
@@ -731,9 +608,6 @@ void generateReport(const Animal animals[], int count) {
     }
 }
 
-/**
- * @brief Функція-запускач для Модуля 4.
- */
 void runReportModule() {
     Animal animals[MAX_ANIMALS];
     int animalCount = 0;
@@ -746,20 +620,11 @@ void runReportModule() {
 
     cout << "\nReport generated. Returning to main menu...\n";
 }
-// =================================================================================
-// Кінець 4 модуля
-// =================================================================================
-
 
 // =================================================================================
-// ГОЛОВНА ФУНКЦІЯ (МЕНЮ ДЛЯ ПРЕЗЕНТАЦІЇ)
+// ГОЛОВНА ФУНКЦІЯ
 // =================================================================================
 
-/**
- * @brief Головна функція програми.
- * Показує меню вибору модуля для демонстрації.
- * @return 0 у разі успішного завершення.
- */
 int main() {
     string choice;
     while (true) {
