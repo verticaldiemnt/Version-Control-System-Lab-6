@@ -544,7 +544,7 @@ void runUpdateAnimalModule() {
 // МОДУЛЬ 4: ФОРМУВАННЯ ЗВІТІВ
 // =================================================================================
 
-void generateReport(const Animal animals[], int count) {
+void generateReport(const Animal animals[], int count) { // pisyn
     if (count == 0) {
         cout << "No animals found to generate a report.\n";
         return;
