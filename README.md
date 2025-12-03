@@ -16,12 +16,22 @@ zoo-system/
 ├── animals.txt       // База даних тварин
 └── report.txt        // Згенерований звіт
 
-
-
+```
 
 ## How to compile
 
-Для компіляції необхідно зібрати основний файл проєкту:Bashg++ main.cpp -o zoo_system
+Для компіляції необхідно зібрати основний файл проєкту:Bashg++ OPI1.cpp -o zoo_system
 Запуск Після успішної компіляції:Bash./zoo_system
 
-Модулі Authorization — модуль авторизації та реєстрації (Login/Register) AddAnimal — підсистема додавання нових тварин з валідацією IDUpdateAnimal — редагування даних (вік, стан здоров'я) Reporting — генерація статистичного звіту по видах тваринДані для входу (за замовчуванням)РольЛогінПарольAdministratoradminadminpassDirectordirectordirectorpassInspectorinspector1inspectorpassVeterinarianvet1vetpassTODO / Майбутні покращеннязбереження даних між сесіямирозділення монолітного файлу на окремі .cpp та .h файлишифрування паролів користувачівпокращення інтерфейсу (меню)
+## Модулі 
+Authorization — модуль авторизації та реєстрації (Login/Register) 
+AddAnimal — підсистема додавання нових тварин з валідацією 
+IDUpdateAnimal — редагування даних (вік, стан здоров'я) 
+Reporting — генерація статистичного звіту по видах тварин
+
+## Дані для входу (за замовчуванням)
+Роль: Administrator Director Inspector Veterinarian
+Логін: admin director inspector vet
+Пароль: adminpass directorpass inspectorpass 1vetpassTODO
+
+## Майбутні покращеннязбереження даних між сесіямирозділення монолітного файлу на окремі .cpp та .h файлишифрування паролів користувачівпокращення інтерфейсу (меню)
