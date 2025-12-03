@@ -32,8 +32,12 @@ Reporting — генерація статистичного звіту по ви
 ## Дані для входу (за замовчуванням)
 Роль: Administrator  Логін: admin  Пароль: adminpass 
 
+
 Роль: Director  Логін: director Пароль: directorpass
+
 Роль: Inspector Логін: inspector Пароль: inspectorpass
+
+
 Veterinarian Логін: vet Пароль: 1vetpassTODO
 
 
