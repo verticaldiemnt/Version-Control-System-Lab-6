@@ -1,3 +1,4 @@
 # Format: ID:Name:Species:Age:HealthStatus
 1:Simba:Lion:2:Healthy
 2:Simba:Lion:12:Healthy
+11020:Masik:Lion:2:Injured

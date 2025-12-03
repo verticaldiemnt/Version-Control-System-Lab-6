@@ -396,19 +396,21 @@ void addNewAnimal(Animal animals[], int& count) {
 
     cout << "Enter animal name: ";
     getline(cin, a.name);
-    // Для тварин також бажано уникати ':', оскільки це роздільник в animals.txt
-    if (a.name.find(':') != string::npos) {
-        cout << "Warning: Removing ':' from name to prevent database corruption.\n";
-        // Простий fix: замінити ':' на пробіл або видалити
-        size_t pos;
-        while ((pos = a.name.find(':')) != string::npos) a.name[pos] = ' ';
+    a.name = trim(a.name);
+
+    while (a.name.empty()) {
+        cout << "Name cannot be empty. Enter animal name: ";
+        getline(cin, a.name);
+        a.name = trim(a.name);
     }
+
 
     cout << "Enter species (e.g., Lion, Tiger, Elephant): ";
     getline(cin, a.species);
     cout << "Enter age (in years): ";
-    while (!(cin >> a.age)) {
-        cout << "Invalid input. Please enter a number: ";
+    while (true) {
+        if (cin >> a.age && a.age >= 0) break;
+        cout << "Invalid age. Age must be a non-negative number. Try again: ";
         cin.clear();
         cin.ignore(10000, '\n');
     }
@@ -649,7 +651,7 @@ int main() {
         }
         else if (choice == "4") {
             runReportModule();
-        }
+        }       
         else if (choice == "5") {
             cout << "Goodbye!\n";
             break;
