@@ -1,14 +1,15 @@
-Zoo Management System
+# Zoo Management System
+
 Консольна система управління зоопарком на C++. Проєкт забезпечує автоматизацію обліку тварин, керування персоналом через рольову модель доступу та генерацію звітності.
 
-Вимоги
-g++ з підтримкою C++11 або новішого стандарту
+## Вимоги
 
-Linux / macOS / Windows (будь-яке середовище з терміналом)
+* **g++** з підтримкою **C++11** або новішого стандарту
+* Linux / macOS / Windows (будь-яке середовище з терміналом)
 
-Структура проєкту
-Plaintext
+## Структура проєкту
 
+```text
 zoo-system/
 ├── main.cpp          // Основний код програми
 ├── users.txt         // База даних користувачів (генерується автоматично)
@@ -16,22 +17,9 @@ zoo-system/
 └── report.txt        // Файл звіту (створюється при експорті)
 How to compile
 Для компіляції необхідно зібрати основний файл проєкту:
-
-```Bash
-
-g++ main.cpp -o zoo_system ```
+g++ main.cpp -o zoo_system
 Запуск
 Після успішної компіляції:
-
-Linux / macOS:
-
-Bash
-
-./zoo_system
-Windows:
-
-DOS
-
 zoo_system.exe
 Модулі
 Auth — модуль авторизації та реєстрації користувачів з розподілом ролей
@@ -44,15 +32,11 @@ Reporting — аналіз даних та формування статисти
 
 Дані для входу (за замовчуванням)
 При першому запуску система створює користувачів з наступними доступами:
-
-Administrator: логін admin, пароль adminpass
-
-Director: логін director, пароль directorpass
-
-Inspector: логін inspector1, пароль inspectorpass
-
-Veterinarian: логін vet1, пароль vetpass
-
+Роль,Логін,Пароль
+Administrator,admin,adminpass
+Director,director,directorpass
+Inspector,inspector1,inspectorpass
+Veterinarian,vet1,vetpass
 TODO / Майбутні покращення
 розділення монолітного файлу на окремі .cpp та .h файли
 
