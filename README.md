@@ -19,7 +19,7 @@ How to compile
 
 ```Bash
 
-g++ main.cpp -o zoo_system```
+g++ main.cpp -o zoo_system ```
 Запуск
 Після успішної компіляції:
 
