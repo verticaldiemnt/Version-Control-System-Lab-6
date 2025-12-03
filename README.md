@@ -31,7 +31,8 @@ Reporting — генерація статистичного звіту по ви
 
 ## Дані для входу (за замовчуванням)
 Роль: Administrator Director Inspector Veterinarian
+
 Логін: admin director inspector vet
+
 Пароль: adminpass directorpass inspectorpass 1vetpassTODO
 
-## Майбутні покращення збереження даних між сесіями розділення монолітного файлу на окремі .cpp та .h файли шифрування паролів користувачів покращення інтерфейсу (меню)
