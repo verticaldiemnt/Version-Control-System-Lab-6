@@ -30,9 +30,11 @@ IDUpdateAnimal — редагування даних (вік, стан здор�
 Reporting — генерація статистичного звіту по видах тварин
 
 ## Дані для входу (за замовчуванням)
-Роль: Administrator Director Inspector Veterinarian
+Роль: Administrator  Логін: admin  Пароль: adminpass 
 
-Логін: admin director inspector vet
+Роль: Director  Логін: director Пароль: directorpass
+Роль: Inspector Логін: inspector Пароль: inspectorpass
+Veterinarian Логін: vet Пароль: 1vetpassTODO
 
-Пароль: adminpass directorpass inspectorpass 1vetpassTODO
+
 
